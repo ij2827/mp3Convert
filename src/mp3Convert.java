@@ -1,5 +1,8 @@
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.plaf.BorderUIResource;
+import javax.swing.plaf.DimensionUIResource;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,8 +31,10 @@ public class mp3Convert extends JFrame {
         super("MP3 Converter");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
-        setPreferredSize(new Dimension(270, 130));
+        setPreferredSize(new Dimension(300, 200));
         setResizable(false);
+        Dimension ss = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((int) (ss.getWidth() / 2) - 300, (int) (ss.getHeight() / 2) - 200);
 
         // Chooser for files
         JFileChooser fileChooser = new JFileChooser();
@@ -48,6 +53,8 @@ public class mp3Convert extends JFrame {
         // Button file selectors
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLocation(1, 2);
+        buttonPanel.setBorder(new BorderUIResource.LineBorderUIResource(Color.lightGray));
+
         // Create,Add Listener, Add to Panel
         JButton selectFolder = new JButton("Folder");
         JButton selectFiles = new JButton("File");
@@ -75,10 +82,44 @@ public class mp3Convert extends JFrame {
         statusPanel.add(statusTitle);
         statusPanel.add(status);
 
+        // Save To Label
+        JPanel dirPanel = new JPanel(new GridBagLayout());
+        JLabel dirTextLabel = new JLabel("Save To ");
+        JTextField dirTextField = new JTextField(20);
+        JButton dirChanger = new JButton("...");
+
+
+        // adjust dirPanel properties
+        dirTextField.setText(defaultDir.toString());
+        dirTextField.setEnabled(false);
+        dirChanger.addActionListener(e -> {
+            result = fileChooser.showSaveDialog(super.getParent());
+            defaultDir = fileChooser.getSelectedFile();
+        });
+
+        //gridBagLayout -
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.anchor = GridBagConstraints.LINE_START;
+        dirPanel.add(dirTextLabel, c);
+
+        c.gridx++;
+        c.weightx = 1;
+        c.fill = GridBagConstraints.HORIZONTAL;
+        dirPanel.add(dirTextField, c);
+
+        c.gridx++;
+        c.weightx = 0;
+        c.fill = GridBagConstraints.NONE;
+        c.anchor = GridBagConstraints.CENTER;
+        dirPanel.add(dirChanger, c);
+
         // Add components
         buttonPanel.add(selectFiles);
         buttonPanel.add(selectFolder);
         add(statusPanel, BorderLayout.NORTH);
+        add(dirPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
         pack();
     }
