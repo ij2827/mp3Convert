@@ -18,13 +18,13 @@ import java.io.InputStreamReader;
  * -- REQUIRES FFMPEG INSTALLED, MAC ONLY --
  */
 public class mp3Convert extends JFrame {
-    private File defaultDir = new File("/Users/Ivan/Desktop");
+    private File defaultDir = new File("/Users/");
     private boolean isFolderSelected = false;
     private boolean isCurrentlyConverting = false;
     private int result;
     private File[] fileContents;
     private File selectedFolderDir;
-    private final String workingDir = System.getProperty("user.dir");
+    private String workingDir = System.getProperty("user.dir"); // Location of file save
     JLabel status = new JLabel("OFF"); // Change while converting and after
 
     public mp3Convert() {
@@ -48,6 +48,13 @@ public class mp3Convert extends JFrame {
         dirChooser.setCurrentDirectory(defaultDir);
         dirChooser.setVisible(true);
         dirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        // Chooser for dir of SAVE
+        JFileChooser saveDirChooser = new JFileChooser();
+        saveDirChooser.setCurrentDirectory(defaultDir);
+        saveDirChooser.getSelectedFile();
+        saveDirChooser.setVisible(true);
+        saveDirChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 
         // Button file selectors
@@ -90,11 +97,13 @@ public class mp3Convert extends JFrame {
 
 
         // adjust dirPanel properties
-        dirTextField.setText(defaultDir.toString());
+        dirTextField.setText(workingDir.toString());
         dirTextField.setEnabled(false);
         dirChanger.addActionListener(e -> {
-            result = fileChooser.showSaveDialog(super.getParent());
-            defaultDir = fileChooser.getSelectedFile();
+            result = saveDirChooser.showSaveDialog(super.getParent());
+            workingDir = saveDirChooser.getSelectedFile().toString();
+            System.out.println(workingDir);
+            dirTextField.setText(workingDir.toString());
         });
 
         //gridBagLayout -
@@ -113,7 +122,7 @@ public class mp3Convert extends JFrame {
         c.weightx = 0;
         c.fill = GridBagConstraints.NONE;
         c.anchor = GridBagConstraints.CENTER;
-        dirPanel.add(dirChanger, c);
+        //dirPanel.add(dirChanger, c);
 
         // Add components
         buttonPanel.add(selectFiles);
@@ -124,12 +133,6 @@ public class mp3Convert extends JFrame {
         pack();
     }
 
-
-    // changes dir that mp3s will be saved to
-    // TODO add a way for the user to change save directory of mp3s
-    public void setDefaultDir(File dir) {
-        this.defaultDir = dir;
-    }
 
     // Changes status JLabel
     public void setStatus(String status) {
